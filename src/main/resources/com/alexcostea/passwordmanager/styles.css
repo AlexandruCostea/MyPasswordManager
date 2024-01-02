@@ -1,0 +1,36 @@
+VBox {
+    -fx-background-color: #404040;
+}
+
+.label {
+    -fx-text-fill: #9B59B6;
+    -fx-font-weight: bold;
+}
+
+.password-field {
+    -fx-background-color: #B3B3B3;
+    -fx-text-fill: #9B59B6;
+}
+
+.button {
+    -fx-background-color: #9B59B6;
+    -fx-text-fill: #404040;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #7D3A85;
+}
+
+.password_mismatch {
+    -fx-border-color: red;
+    -fx-border-width: 2px;
+}
+
+.weak_password {
+    -fx-border-color: yellow;
+    -fx-border-width: 2px;
+}
