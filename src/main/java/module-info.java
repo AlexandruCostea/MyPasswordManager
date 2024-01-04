@@ -1,6 +1,7 @@
 module com.alexcostea.passwordmanager {
     requires javafx.controls;
     requires javafx.fxml;
+    requires com.google.gson;
 
 
     opens com.alexcostea.passwordmanager to javafx.fxml;

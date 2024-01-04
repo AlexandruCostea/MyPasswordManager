@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.alexcostea.passwordmanager.Controller.MainPageController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <ListView fx:id="loginsView" />
+    <Button text="Add Login" onMouseClicked="#addLogin"/>
+</VBox>

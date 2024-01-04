@@ -1,5 +1,6 @@
 package com.alexcostea.passwordmanager;
 
+import com.alexcostea.passwordmanager.Controller.AuthenticationController;
 import com.alexcostea.passwordmanager.Controller.CreatePasswordController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -15,19 +16,6 @@ import java.nio.file.Paths;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        Path path = Paths.get("data/data.json");
-        byte[] bytes = Files.readAllBytes(path);
-        String jsonContent = new String(bytes);
-        FXMLLoader fxmlLoader;
-        if(jsonContent.isEmpty()) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("createPasswordMenu.fxml"));
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("authenticationMenu.fxml"));
-            fxmlLoader.setControllerFactory(param -> new CreatePasswordController(stage, loader));
-        }
-        else
-            fxmlLoader = new FXMLLoader(getClass().getResource("authenticationMenu.fxml"));
-
-        Scene scene = new Scene(fxmlLoader.load(), 500, 500);
         URL url = getClass().getResource("styles.css");
         if (url == null) {
             System.out.println("Resource not found. Aborting.");
@@ -35,6 +23,25 @@ public class Main extends Application {
         }
 
         String css = url.toExternalForm();
+
+        Path path = Paths.get("data/data.json");
+        byte[] bytes = Files.readAllBytes(path);
+        String jsonContent = new String(bytes);
+        FXMLLoader fxmlLoader;
+        if(jsonContent.isEmpty()) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("createPasswordMenu.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("mainPage.fxml"));
+            FXMLLoader addLoader = new FXMLLoader(getClass().getResource("addLoginMenu.fxml"));
+            fxmlLoader.setControllerFactory(param -> new CreatePasswordController(stage, loader, addLoader, css));
+        }
+        else {
+            fxmlLoader = new FXMLLoader(getClass().getResource("authenticationMenu.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("mainPage.fxml"));
+            FXMLLoader addLoader = new FXMLLoader(getClass().getResource("addLoginMenu.fxml"));
+            fxmlLoader.setControllerFactory(param -> new AuthenticationController(stage, loader, addLoader, css));
+        }
+
+        Scene scene = new Scene(fxmlLoader.load(), 500, 500);
         scene.getStylesheets().add(css);
 
         stage.setTitle("MyPasswordManager");

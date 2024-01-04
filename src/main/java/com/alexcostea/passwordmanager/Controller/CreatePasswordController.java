@@ -8,7 +8,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.regex.Pattern;
 
 public class CreatePasswordController {
@@ -16,6 +22,9 @@ public class CreatePasswordController {
     private final Stage mainStage;
 
     private final FXMLLoader newSceneLoader;
+
+    private final FXMLLoader addLoader;
+    private final String css;
 
 
     @FXML
@@ -33,9 +42,11 @@ public class CreatePasswordController {
     @FXML
     protected Button confirmButton;
 
-    public CreatePasswordController(Stage mainStage, FXMLLoader loader) {
+    public CreatePasswordController(Stage mainStage, FXMLLoader loader, FXMLLoader addLoader, String css) {
         this.mainStage = mainStage;
         this.newSceneLoader = loader;
+        this.addLoader = addLoader;
+        this.css = css;
     }
     @FXML
     public void confirmPassword() {
@@ -63,11 +74,19 @@ public class CreatePasswordController {
                 this.confirmPassword.getStyleClass().add("weak_password");
             }
             else {
+                String salt = generatePasswordSalt();
+                String saltedPassword = this.password.getText() + salt;
                 try {
+                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                    byte[] encodedPassword = digest.digest(saltedPassword.getBytes());
+                    String passwordHash = new BigInteger(1,encodedPassword).toString(16);
+                    saveJsonContent(salt, passwordHash);
+                    this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css));
                     Scene newScene = new Scene(this.newSceneLoader.load(), 500, 500);
+                    newScene.getStylesheets().add(this.css);
                     this.mainStage.setScene(newScene);
-                } catch(IOException e) {
-                    System.out.println(e.getMessage());
+                } catch(Exception e) {
+                    System.out.println(e.getClass() + e.getMessage());
                 }
             }
         }
@@ -83,5 +102,26 @@ public class CreatePasswordController {
                 && uppercase.matcher(password).find()
                 && number.matcher(password).find()
                 && special.matcher(password).find();
+    }
+
+    String generatePasswordSalt() {
+        byte[] salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        return new BigInteger(1,salt).toString(16);
+    }
+
+    void saveJsonContent(String salt, String hashedPassword) {
+        Path path = Paths.get("data/data.json");
+        String jsonContent = "{\n" +
+                             "  \"salt\": \"" + salt +"\",\n" +
+                             "  \"hashedPassword\": \"" + hashedPassword +"\",\n" +
+                             "  \"iv\": \"\",\n" +
+                             "  \"encryptedData\": \"\"\n" +
+                             "}";
+        try {
+            Files.writeString(path, jsonContent, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception e) {
+            System.out.println(e.getClass() + e.getMessage());
+        }
     }
 }

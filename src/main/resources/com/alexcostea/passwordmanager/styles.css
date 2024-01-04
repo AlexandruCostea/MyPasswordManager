@@ -34,3 +34,8 @@ VBox {
     -fx-border-color: yellow;
     -fx-border-width: 2px;
 }
+
+.list-view {
+    -fx-control-inner-background: #9B59B6;
+    -fx-background-radius: 10px;
+}
