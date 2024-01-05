@@ -46,7 +46,7 @@ public class ViewLoginController {
         Login login = new Login(this.title.getText(), this.mailOrUser.getText(), this.password.getText());
         if(!login.equals(this.login)) {
             this.logins.remove(this.login);
-            this.logins.add(login);
+            this.logins.addFirst(login);
             this.setLogin(login);
         }
     }

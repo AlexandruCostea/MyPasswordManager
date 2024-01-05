@@ -23,14 +23,6 @@ public class Login {
         return this.password;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setMailOrUsername(String mailOrUsername) {
-        this.mailOrUsername = mailOrUsername;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }

@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import javax.crypto.Cipher;
@@ -44,6 +44,9 @@ public class MainPageController {
 
     @FXML
     protected ListView<Login> loginsView;
+
+    @FXML
+    protected TextField generatedPassword;
 
     public MainPageController(FXMLLoader addLoader, FXMLLoader viewLoader, String css, Stage primaryStage, String password) {
         primaryStage.setOnCloseRequest(event -> saveData());
@@ -171,6 +174,26 @@ public class MainPageController {
             System.out.println(e.getClass() + e.getMessage());
         }
 
+    }
+
+    public void generatePassword() {
+        String lowercase = "abcdefghijklmnopqrstuvwxyz";
+        String uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String digits = "0123456789";
+        String symbols = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/";
+
+        SecureRandom secureRandom = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        String allCharacters = lowercase + uppercase + digits + symbols;
+
+        for (int i = 0; i < 15; i++) {
+            int randomIndex = secureRandom.nextInt(allCharacters.length());
+            char randomChar = allCharacters.charAt(randomIndex);
+            password.append(randomChar);
+        }
+
+        this.generatedPassword.setText(password.toString());
     }
 
 
