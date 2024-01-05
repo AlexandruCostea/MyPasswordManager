@@ -38,9 +38,9 @@ public class Login {
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Login login) {
-            return this.title.equals(login.password)
-                    && this.mailOrUsername.equals(login.mailOrUsername)
-                    && this.password.equals(login.password);
+            return this.title.equals(login.getTitle())
+                    && this.mailOrUsername.equals(login.getMailOrUsername())
+                    && this.password.equals(login.getPassword());
         }
         return false;
     }

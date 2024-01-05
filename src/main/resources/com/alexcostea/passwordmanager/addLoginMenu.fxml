@@ -2,7 +2,6 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
@@ -22,5 +21,6 @@
         <Label text="Password" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
         <TextField fx:id="password" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
     </GridPane>
+    <Label fx:id="invalidLogin" style="-fx-text-fill: red"/>
     <Button text="Add Login" onMouseClicked="#addLogin" />
 </VBox>

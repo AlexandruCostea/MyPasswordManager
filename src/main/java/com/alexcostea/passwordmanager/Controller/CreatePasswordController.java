@@ -81,7 +81,7 @@ public class CreatePasswordController {
                     byte[] encodedPassword = digest.digest(saltedPassword.getBytes());
                     String passwordHash = new BigInteger(1,encodedPassword).toString(16);
                     saveJsonContent(salt, passwordHash);
-                    this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css));
+                    this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, this.mainStage, this.password.getText()));
                     Scene newScene = new Scene(this.newSceneLoader.load(), 500, 500);
                     newScene.getStylesheets().add(this.css);
                     this.mainStage.setScene(newScene);

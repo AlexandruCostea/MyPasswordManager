@@ -1,6 +1,5 @@
 package com.alexcostea.passwordmanager.Controller;
 
-import com.alexcostea.passwordmanager.Controller.MainPageController;
 import com.alexcostea.passwordmanager.Domain.Login;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
@@ -14,17 +13,22 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 public class AuthenticationController {
 
@@ -71,16 +75,18 @@ public class AuthenticationController {
             else {
                 try {
                     if(this.jsonData.encryptedData.isEmpty())
-                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css));
+                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, this.mainStage, this.password.getText()));
                     else {
-                        String jsonObjectList = decode(this.password.getText(), this.jsonData.iv, this.jsonData.encryptedData);
+                        String jsonObjectList = decode(this.password.getText(), this.jsonData.salt, this.jsonData.iv, this.jsonData.encryptedData);
                         EntryList data = new Gson().fromJson(jsonObjectList, EntryList.class);
+                        data.logins.removeIf(Objects::isNull);
                         List<Login> logins = new ArrayList<>();
                         for(ListEntry entry: data.logins) {
                             logins.add(new Login(entry.title, entry.mailOrUsername, entry.password));
                         }
-                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, logins));
+                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, this.mainStage,this.password.getText(), logins));
                     }
+                    updatePassword(jsonData, this.password.getText());
                     Scene newScene = new Scene(this.newSceneLoader.load(), 500, 500);
                     newScene.getStylesheets().add(this.css);
                     this.mainStage.setScene(newScene);
@@ -93,19 +99,49 @@ public class AuthenticationController {
         }
     }
 
-    public String decode(String password, String iv, String encryptedData) throws Exception{
-        byte[] decodedPassword = Base64.getDecoder().decode(password);
-        byte[] decodedIv = Base64.getDecoder().decode(iv);
-        byte[] decodedMessage = Base64.getDecoder().decode(encryptedData);
+    public String decode(String password, String salt, String iv, String encryptedData) throws Exception{
+        char[] passwordChars = password.toCharArray();
+        byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec keySpec = new PBEKeySpec(passwordChars, saltBytes, 10000, 256);
+        SecretKey secretKey1 = keyFactory.generateSecret(keySpec);
+        SecretKey secretKey = new SecretKeySpec(secretKey1.getEncoded(), "AES");
 
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("AES");
-        SecretKey secretKey = keyFactory.generateSecret(new SecretKeySpec(decodedPassword, "AES"));
+        byte[] ivBytes = Base64.getDecoder().decode(iv);
+        IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(decodedIv));
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+
+        byte[] decodedMessage = Base64.getDecoder().decode(encryptedData);
         byte[] decryptedBytes = cipher.doFinal(decodedMessage);
 
         return new String(decryptedBytes);
+    }
+    String generatePasswordSalt() {
+        byte[] salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        return new BigInteger(1,salt).toString(16);
+    }
+
+    void updatePassword(JsonData jsonData, String password) {
+        String newSalt = generatePasswordSalt();
+        String saltedPassword = password + newSalt;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedPassword = digest.digest(saltedPassword.getBytes());
+            String passwordHash = new BigInteger(1,encodedPassword).toString(16);
+            Path path = Paths.get("data/data.json");
+            String jsonContent = "{\n" +
+                    "  \"salt\": \"" + newSalt +"\",\n" +
+                    "  \"hashedPassword\": \"" + passwordHash +"\",\n" +
+                    "  \"iv\": \"" +jsonData.iv + "\",\n" +
+                    "  \"encryptedData\": \""+ jsonData.encryptedData +"\"\n" +
+                    "}";
+            Files.writeString(path, jsonContent, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception e) {
+            System.out.println(e.getClass() + e.getMessage());
+        }
     }
 
     public static class JsonData {
