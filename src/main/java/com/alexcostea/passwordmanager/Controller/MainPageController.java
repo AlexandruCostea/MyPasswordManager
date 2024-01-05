@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import javax.crypto.Cipher;
@@ -31,36 +32,52 @@ public class MainPageController {
 
     private Scene addScene;
 
+    private final FXMLLoader viewLoader;
+
     private final String css;
 
     private final String password;
 
+    private ViewLoginController ctrl;
+
+    private Scene viewScene;
+
     @FXML
     protected ListView<Login> loginsView;
 
-    public MainPageController(FXMLLoader addLoader, String css, Stage primaryStage, String password) {
+    public MainPageController(FXMLLoader addLoader, FXMLLoader viewLoader, String css, Stage primaryStage, String password) {
         primaryStage.setOnCloseRequest(event -> saveData());
         this.logins = FXCollections.observableArrayList();
+        this.viewLoader = viewLoader;
         this.css = css;
         this.password = password;
         try {
             addLoader.setControllerFactory(param -> new AddLoginController(this.logins));
+            this.viewLoader.setControllerFactory(param -> new ViewLoginController(this.logins, null, this.css));
             this.addScene = new Scene(addLoader.load(), 400, 300);
             this.addScene.getStylesheets().add(this.css);
+            this.viewScene = new Scene(this.viewLoader.load(), 400, 300);
+            this.viewScene.getStylesheets().add(this.css);
+            this.ctrl = this.viewLoader.getController();
         } catch (Exception e) {
             System.out.println(e.getClass() + "\n" + e.getMessage());
         }
     }
 
-    public MainPageController(FXMLLoader addLoader, String css, Stage primaryStage, String password, List<Login> logins) {
+    public MainPageController(FXMLLoader addLoader, FXMLLoader viewLoader, String css, Stage primaryStage, String password, List<Login> logins) {
         primaryStage.setOnCloseRequest(event -> saveData());
         this.logins = FXCollections.observableList(logins);
+        this.viewLoader = viewLoader;
         this.css = css;
         this.password = password;
         try {
             addLoader.setControllerFactory(param -> new AddLoginController(this.logins));
+            this.viewLoader.setControllerFactory(param -> new ViewLoginController(this.logins, null, this.css));
             this.addScene = new Scene(addLoader.load(), 400, 300);
             this.addScene.getStylesheets().add(this.css);
+            this.viewScene = new Scene(this.viewLoader.load(), 400, 300);
+            this.viewScene.getStylesheets().add(this.css);
+            this.ctrl = this.viewLoader.getController();
         } catch (Exception e) {
             System.out.println(e.getClass() + e.getMessage());
         }
@@ -142,6 +159,20 @@ public class MainPageController {
         json.append(" ]\n}");
         return json.toString();
     }
+
+    public void viewLogin() {
+        Login selectedLogin = this.loginsView.getSelectionModel().getSelectedItem();
+        this.ctrl.setLogin(selectedLogin);
+        try {
+            Stage stage = new Stage();
+            stage.setScene(this.viewScene);
+            stage.show();
+        } catch (Exception e) {
+            System.out.println(e.getClass() + e.getMessage());
+        }
+
+    }
+
 
     public static class EncryptionResult {
         public String iv;

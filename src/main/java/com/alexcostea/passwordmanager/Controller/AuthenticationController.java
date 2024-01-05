@@ -35,6 +35,8 @@ public class AuthenticationController {
     private final Stage mainStage;
     private final FXMLLoader newSceneLoader;
     private final FXMLLoader addLoader;
+
+    private final FXMLLoader viewLoader;
     private final String css;
 
     @FXML
@@ -45,10 +47,11 @@ public class AuthenticationController {
 
     private JsonData jsonData;
 
-    public AuthenticationController(Stage stage, FXMLLoader loader, FXMLLoader addLoader, String css) {
+    public AuthenticationController(Stage stage, FXMLLoader loader, FXMLLoader addLoader, FXMLLoader viewLoader, String css) {
         this.mainStage = stage;
         this.newSceneLoader = loader;
         this.addLoader = addLoader;
+        this.viewLoader = viewLoader;
         this.css = css;
     }
 
@@ -75,7 +78,7 @@ public class AuthenticationController {
             else {
                 try {
                     if(this.jsonData.encryptedData.isEmpty())
-                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, this.mainStage, this.password.getText()));
+                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.viewLoader, this.css, this.mainStage, this.password.getText()));
                     else {
                         String jsonObjectList = decode(this.password.getText(), this.jsonData.salt, this.jsonData.iv, this.jsonData.encryptedData);
                         EntryList data = new Gson().fromJson(jsonObjectList, EntryList.class);
@@ -84,7 +87,7 @@ public class AuthenticationController {
                         for(ListEntry entry: data.logins) {
                             logins.add(new Login(entry.title, entry.mailOrUsername, entry.password));
                         }
-                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, this.mainStage,this.password.getText(), logins));
+                        this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader,this.viewLoader,  this.css, this.mainStage,this.password.getText(), logins));
                     }
                     updatePassword(jsonData, this.password.getText());
                     Scene newScene = new Scene(this.newSceneLoader.load(), 500, 500);

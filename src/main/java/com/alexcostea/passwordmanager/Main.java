@@ -3,6 +3,7 @@ package com.alexcostea.passwordmanager;
 import com.alexcostea.passwordmanager.Controller.AuthenticationController;
 import com.alexcostea.passwordmanager.Controller.CreatePasswordController;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -32,13 +33,15 @@ public class Main extends Application {
             fxmlLoader = new FXMLLoader(getClass().getResource("createPasswordMenu.fxml"));
             FXMLLoader loader = new FXMLLoader(getClass().getResource("mainPage.fxml"));
             FXMLLoader addLoader = new FXMLLoader(getClass().getResource("addLoginMenu.fxml"));
-            fxmlLoader.setControllerFactory(param -> new CreatePasswordController(stage, loader, addLoader, css));
+            FXMLLoader viewLoader = new FXMLLoader(getClass().getResource("viewLoginMenu.fxml"));
+            fxmlLoader.setControllerFactory(param -> new CreatePasswordController(stage, loader, addLoader, viewLoader, css));
         }
         else {
             fxmlLoader = new FXMLLoader(getClass().getResource("authenticationMenu.fxml"));
             FXMLLoader loader = new FXMLLoader(getClass().getResource("mainPage.fxml"));
             FXMLLoader addLoader = new FXMLLoader(getClass().getResource("addLoginMenu.fxml"));
-            fxmlLoader.setControllerFactory(param -> new AuthenticationController(stage, loader, addLoader, css));
+            FXMLLoader viewLoader = new FXMLLoader(getClass().getResource("viewLoginMenu.fxml"));
+            fxmlLoader.setControllerFactory(param -> new AuthenticationController(stage, loader, addLoader, viewLoader, css));
         }
 
         Scene scene = new Scene(fxmlLoader.load(), 500, 500);

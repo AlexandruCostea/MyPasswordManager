@@ -24,6 +24,8 @@ public class CreatePasswordController {
     private final FXMLLoader newSceneLoader;
 
     private final FXMLLoader addLoader;
+
+    private final FXMLLoader viewLoader;
     private final String css;
 
 
@@ -42,10 +44,11 @@ public class CreatePasswordController {
     @FXML
     protected Button confirmButton;
 
-    public CreatePasswordController(Stage mainStage, FXMLLoader loader, FXMLLoader addLoader, String css) {
+    public CreatePasswordController(Stage mainStage, FXMLLoader loader, FXMLLoader addLoader, FXMLLoader viewLoader, String css) {
         this.mainStage = mainStage;
         this.newSceneLoader = loader;
         this.addLoader = addLoader;
+        this.viewLoader = viewLoader;
         this.css = css;
     }
     @FXML
@@ -81,7 +84,7 @@ public class CreatePasswordController {
                     byte[] encodedPassword = digest.digest(saltedPassword.getBytes());
                     String passwordHash = new BigInteger(1,encodedPassword).toString(16);
                     saveJsonContent(salt, passwordHash);
-                    this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.css, this.mainStage, this.password.getText()));
+                    this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.viewLoader, this.css, this.mainStage, this.password.getText()));
                     Scene newScene = new Scene(this.newSceneLoader.load(), 500, 500);
                     newScene.getStylesheets().add(this.css);
                     this.mainStage.setScene(newScene);

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.alexcostea.passwordmanager.Controller.ViewLoginController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <GridPane alignment="CENTER" vgap="20.0" hgap="5.0">
+        <Label text="Title" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="title" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+        <Label text="Email or username" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="mailOrUser" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+
+        <Label text="Password" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <TextField fx:id="password" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+
+        <Button text="Update" onMouseClicked="#updateLogin" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Button text="Delete" onMouseClicked="#deleteLogin" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+    </GridPane>
+</VBox>
