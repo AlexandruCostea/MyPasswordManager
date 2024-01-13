@@ -58,3 +58,8 @@ VBox {
     -fx-background-radius: 10px;
     -fx-font-size: 20;
 }
+
+.image_button {
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}

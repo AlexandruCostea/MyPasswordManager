@@ -6,15 +6,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.regex.Pattern;
 
 public class CreatePasswordController {
@@ -51,6 +55,17 @@ public class CreatePasswordController {
         this.viewLoader = viewLoader;
         this.css = css;
     }
+
+    public void initialize() {
+        this.password.setOnKeyPressed(this::checkKey);
+        this.confirmPassword.setOnKeyPressed(this::checkKey);
+    }
+
+    private void checkKey(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER) {
+            confirmPassword();
+        }
+    }
     @FXML
     public void confirmPassword() {
         if(!this.password.getText().equals(this.confirmPassword.getText())) {
@@ -83,8 +98,10 @@ public class CreatePasswordController {
                     MessageDigest digest = MessageDigest.getInstance("SHA-256");
                     byte[] encodedPassword = digest.digest(saltedPassword.getBytes());
                     String passwordHash = new BigInteger(1,encodedPassword).toString(16);
-                    saveJsonContent(salt, passwordHash);
-                    this.newSceneLoader.setControllerFactory(param -> new MainPageController(this.addLoader, this.viewLoader, this.css, this.mainStage, this.password.getText()));
+                    SecretKey key = createSecretKey(this.password.getText(), salt);
+                    this.newSceneLoader.setControllerFactory(param ->
+                            new MainPageController(this.addLoader, this.viewLoader, this.css, this.mainStage,
+                                    key, key, salt, passwordHash));
                     Scene newScene = new Scene(this.newSceneLoader.load(), 500, 500);
                     newScene.getStylesheets().add(this.css);
                     this.mainStage.setScene(newScene);
@@ -113,18 +130,12 @@ public class CreatePasswordController {
         return new BigInteger(1,salt).toString(16);
     }
 
-    void saveJsonContent(String salt, String hashedPassword) {
-        Path path = Paths.get("data/data.json");
-        String jsonContent = "{\n" +
-                             "  \"salt\": \"" + salt +"\",\n" +
-                             "  \"hashedPassword\": \"" + hashedPassword +"\",\n" +
-                             "  \"iv\": \"\",\n" +
-                             "  \"encryptedData\": \"\"\n" +
-                             "}";
-        try {
-            Files.writeString(path, jsonContent, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (Exception e) {
-            System.out.println(e.getClass() + e.getMessage());
-        }
+    SecretKey createSecretKey(String password, String salt) throws Exception {
+        char[] passwordChars = password.toCharArray();
+        byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec keySpec = new PBEKeySpec(passwordChars, saltBytes, 10000, 256);
+        SecretKey secretKey1 = keyFactory.generateSecret(keySpec);
+        return new SecretKeySpec(secretKey1.getEncoded(), "AES");
     }
 }

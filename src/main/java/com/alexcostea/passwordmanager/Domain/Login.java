@@ -5,6 +5,9 @@ public class Login {
     private String mailOrUsername;
     private String password;
 
+    public Login() {
+    }
+
     public Login(String title, String mailOrUsername, String password) {
         this.title = title;
         this.mailOrUsername = mailOrUsername;
@@ -23,6 +26,13 @@ public class Login {
         return this.password;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setMailOrUsername(String mailOrUsername) {
+        this.mailOrUsername = mailOrUsername;
+    }
     public void setPassword(String password) {
         this.password = password;
     }
