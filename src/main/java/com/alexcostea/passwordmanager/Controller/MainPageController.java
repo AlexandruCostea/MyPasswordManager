@@ -72,13 +72,15 @@ public class MainPageController {
 
     public void viewLogin() {
         Login selectedLogin = this.loginsView.getSelectionModel().getSelectedItem();
-        this.ctrl.setLogin(selectedLogin);
-        try {
-            Stage stage = new Stage();
-            stage.setScene(this.viewScene);
-            stage.show();
-        } catch (Exception e) {
-            System.out.println(e.getClass() + e.getMessage());
+        if(selectedLogin != null) {
+            this.ctrl.setLogin(selectedLogin);
+            try {
+                Stage stage = new Stage();
+                stage.setScene(this.viewScene);
+                stage.show();
+            } catch (Exception e) {
+                System.out.println(e.getClass() + e.getMessage());
+            }
         }
 
     }
