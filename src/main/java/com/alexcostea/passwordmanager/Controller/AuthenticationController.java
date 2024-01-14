@@ -57,8 +57,7 @@ public class AuthenticationController {
         try {
             String dataString = new String(Files.readAllBytes(path));
             ObjectMapper mapper = new ObjectMapper();
-            this.jsonData = mapper.readValue
-                    (dataString, JsonData.class);
+            this.jsonData = mapper.readValue(dataString, JsonData.class);
         } catch (Exception e) {
             System.out.println(e.getClass() + e.getMessage());
         }

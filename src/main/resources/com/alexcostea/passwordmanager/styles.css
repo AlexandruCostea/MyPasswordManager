@@ -63,3 +63,27 @@ VBox {
     -fx-background-radius: 0;
     -fx-padding: 0;
 }
+
+.dialog-pane {
+    -fx-background-color: #404040;
+    -fx-text-fill: #7D3A85;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #9B59B6;
+    -fx-text-fill: #404040;
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #7D3A85;
+    -fx-text-fill: #404040;
+}
+
+.alert-header {
+    -fx-background-color: #303030;
+    -fx-padding: 10;
+    -fx-text-fill: #7D3A85;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+}

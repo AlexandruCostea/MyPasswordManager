@@ -2,6 +2,7 @@ module com.alexcostea.passwordmanager {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.fasterxml.jackson.databind;
+    requires itextpdf;
 
 
     opens com.alexcostea.passwordmanager to javafx.fxml;

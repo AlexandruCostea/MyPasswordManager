@@ -14,5 +14,6 @@
     <ListView fx:id="loginsView" onMouseClicked="#viewLogin"/>
     <HBox alignment="CENTER" spacing="40.0">
         <Button text="Add Login" onMouseClicked="#addLogin"/>
+        <Button text="Download PDF" onMouseClicked="#downloadPDF"/>
     </HBox>
 </VBox>
