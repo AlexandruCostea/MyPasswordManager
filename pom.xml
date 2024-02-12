@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.alexcostea</groupId>
-  <artifactId>PasswordManager</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Password Manager</name>
+  <artifactId>MyPasswordManager</artifactId>
+  <version>1.0</version>
+  <name>My Password Manager</name>
   <packaging>jar</packaging>
 
   <properties>
@@ -71,7 +71,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.alexcostea.passwordmanager/com.alexcostea.passwordmanager.Main</mainClass>
+              <mainClass>com.alexcostea.passwordmanager.Main</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
@@ -79,6 +79,30 @@
               <stripDebug>true</stripDebug>
               <noHeaderFiles>true</noHeaderFiles>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>src.main.java.com.alexcostea.passwordmanager.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
